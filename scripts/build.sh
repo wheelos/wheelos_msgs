@@ -6,4 +6,4 @@ set -e
 
 LOCAL_CACHE="/tmp/cache/"
 
-bazel build //common_msgs/... --distdir="$LOCAL_CACHE"
+bazel build //wheelos_msgs/... --distdir="$LOCAL_CACHE"
