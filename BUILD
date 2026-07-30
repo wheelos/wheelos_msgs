@@ -15,7 +15,7 @@ py_package(
 py_wheel(
     name = "wheelos_msgs_wheel",
     distribution = "wheelos_msgs",
-    version = "0.1.4",
+    version = "0.1.5",
     python_tag = "py3",
     abi = "none",
     platform = "any",

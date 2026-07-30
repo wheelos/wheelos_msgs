@@ -37,12 +37,17 @@ jobs:
       - name: Build protobuf targets and wheel
         run: bazel build //wheelos_msgs/... //:wheelos_msgs_wheel.dist
 
+      - name: Stage wheel artifacts
+        run: |
+          mkdir -p dist
+          cp -f bazel-bin/wheelos_msgs_wheel_dist/*.whl dist/
+
       - name: Check wheel metadata
         run: |
           python -m pip install --disable-pip-version-check twine
-          twine check bazel-bin/wheelos_msgs_wheel_dist/*.whl
+          twine check dist/*.whl
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: bazel-bin/wheelos_msgs_wheel_dist
+          packages-dir: dist
