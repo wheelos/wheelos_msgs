@@ -12,7 +12,7 @@ Design and release documentation:
 In your consumer project's `MODULE.bazel`:
 
 ```starlark
-bazel_dep(name = "wheelos_msgs", version = "0.1.0")
+bazel_dep(name = "wheelos_msgs", version = "0.1.5")
 ```
 
 Each message directory is a normal Bazel package in the single
