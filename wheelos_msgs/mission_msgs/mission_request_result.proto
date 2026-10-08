@@ -1,0 +1,66 @@
+syntax = "proto2";
+
+package apollo.mission;
+
+import "wheelos_msgs/planning_msgs/mission_directive.proto";
+import "wheelos_msgs/control_msgs/safety_stop.proto";
+
+message MissionRequestIdentity {
+  optional string client_epoch = 1;
+  optional string request_id = 2;
+}
+
+enum MissionRequestOutcome {
+  MISSION_REQUEST_OUTCOME_UNKNOWN = 0;
+  MISSION_REQUEST_REJECTED = 1;
+  MISSION_REQUEST_PENDING = 2;
+  MISSION_REQUEST_COMMITTED = 3;
+  MISSION_REQUEST_ACCEPTED = 4;
+  MISSION_REQUEST_TERMINAL = 5;
+}
+
+enum MissionRequestCode {
+  MISSION_REQUEST_CODE_UNKNOWN = 0;
+  MISSION_REQUEST_OK = 1;
+  MISSION_REQUEST_INVALID_INPUT = 2;
+  MISSION_REQUEST_CONFLICT = 3;
+  MISSION_REQUEST_UNSUPPORTED_OPERATION = 4;
+  MISSION_REQUEST_UNSUPPORTED_VERSION = 5;
+  MISSION_REQUEST_CAPABILITY_UNAVAILABLE = 6;
+  MISSION_REQUEST_INFEASIBLE_GOAL = 7;
+  MISSION_REQUEST_STORAGE_UNAVAILABLE = 8;
+  MISSION_REQUEST_BUDGET_EXHAUSTED = 9;
+  MISSION_REQUEST_RESULT_EXPIRED = 10;
+  MISSION_REQUEST_SAFETY_RESTRICTED = 11;
+}
+
+enum MissionRequestRetryDisposition {
+  MISSION_REQUEST_RETRY_UNKNOWN = 0;
+  MISSION_REQUEST_DO_NOT_RETRY = 1;
+  MISSION_REQUEST_RECONCILE = 2;
+  MISSION_REQUEST_RETRY_AFTER_CHANGE = 3;
+}
+
+enum MissionTaskDisposition {
+  MISSION_TASK_DISPOSITION_UNKNOWN = 0;
+  MISSION_TASK_COMPLETED = 1;
+  MISSION_TASK_CANCELLED = 2;
+  MISSION_TASK_FAILED = 3;
+  MISSION_TASK_SUPERSEDED = 4;
+  MISSION_TASK_INTERRUPTED = 5;
+}
+
+message MissionRequestResult {
+  optional MissionRequestIdentity identity = 1;
+  optional string requested_mission_id = 2;
+  optional MissionRequestOutcome outcome = 3;
+  optional MissionRequestCode code = 4;
+  optional string reason = 5;
+  optional MissionRequestRetryDisposition retry_disposition = 6;
+  optional apollo.planning.MissionCommandIdentity affected_task_identity = 7;
+  optional apollo.planning.MissionCommandIdentity current_task_identity = 8;
+  optional bool durably_committed = 9;
+  optional uint64 commit_sequence = 10;
+  optional MissionTaskDisposition terminal_disposition = 11;
+  optional apollo.control.SafetyStopObservation safety_observation = 12;
+}

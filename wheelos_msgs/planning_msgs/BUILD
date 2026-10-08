@@ -8,6 +8,100 @@ load("@rules_python//python:defs.bzl", "py_library")
 package(default_visibility = ["//visibility:public"])
 
 cc_proto_library(
+    name = "mission_directive_cc_proto",
+    deps = [
+        ":mission_directive_proto",
+    ],
+)
+
+proto_library(
+    name = "mission_directive_proto",
+    srcs = ["mission_directive.proto"],
+    deps = [
+        ":planning_command_proto",
+        "//wheelos_msgs/map_msgs:map_geometry_proto",
+        "//wheelos_msgs/basic_msgs:geometry_proto",
+        "//wheelos_msgs/basic_msgs:header_proto",
+    ],
+)
+
+py_proto_library(
+    name = "mission_directive_py_pb2",
+    deps = [":mission_directive_proto"],
+)
+
+cc_proto_library(
+    name = "motion_execution_cc_proto",
+    deps = [
+        ":motion_execution_proto",
+    ],
+)
+
+proto_library(
+    name = "motion_execution_proto",
+    srcs = ["motion_execution.proto"],
+    deps = [
+        ":mission_directive_proto",
+        ":planning_command_proto",
+        ":planning_proto",
+        "//wheelos_msgs/basic_msgs:geometry_proto",
+        "//wheelos_msgs/basic_msgs:header_proto",
+        "//wheelos_msgs/basic_msgs:pnc_point_proto",
+        "//wheelos_msgs/chassis_msgs:chassis_proto",
+    ],
+)
+
+py_proto_library(
+    name = "motion_execution_py_pb2",
+    deps = [":motion_execution_proto"],
+)
+
+cc_proto_library(
+    name = "planning_command_cc_proto",
+    deps = [
+        ":planning_command_proto",
+    ],
+)
+
+proto_library(
+    name = "planning_command_proto",
+    srcs = ["planning_command.proto"],
+    deps = [
+        "//wheelos_msgs/basic_msgs:geometry_proto",
+        "//wheelos_msgs/basic_msgs:header_proto",
+        "//wheelos_msgs/map_msgs:map_geometry_proto",
+        "//wheelos_msgs/routing_msgs:routing_proto",
+    ],
+)
+
+py_proto_library(
+    name = "planning_command_py_pb2",
+    deps = [":planning_command_proto"],
+)
+
+cc_proto_library(
+    name = "planning_runtime_status_cc_proto",
+    deps = [
+        ":planning_runtime_status_proto",
+    ],
+)
+
+proto_library(
+    name = "planning_runtime_status_proto",
+    srcs = ["planning_runtime_status.proto"],
+    deps = [
+        ":mission_directive_proto",
+        ":planning_command_proto",
+        "//wheelos_msgs/basic_msgs:header_proto",
+    ],
+)
+
+py_proto_library(
+    name = "planning_runtime_status_py_pb2",
+    deps = [":planning_runtime_status_proto"],
+)
+
+cc_proto_library(
     name = "decision_cc_proto",
     deps = [
         ":decision_proto",
@@ -91,7 +185,9 @@ proto_library(
         "//wheelos_msgs/basic_msgs:pnc_point_proto",
         "//wheelos_msgs/map_msgs:map_id_proto",
         ":decision_proto",
+        ":planning_command_proto",
         ":planning_internal_proto",
+        ":planning_runtime_status_proto",
     ],
 )
 
@@ -120,6 +216,7 @@ proto_library(
         "//wheelos_msgs/perception_msgs:traffic_light_detection_proto",
         ":decision_proto",
         ":navigation_proto",
+        ":planning_command_proto",
         ":scenario_type_proto",
         ":sl_boundary_proto",
         "//wheelos_msgs/routing_msgs:routing_proto",
@@ -173,10 +270,14 @@ cc_library(
     name = "planning_msgs_cc_proto",
     deps = [
         ":decision_cc_proto",
+        ":mission_directive_cc_proto",
+        ":motion_execution_cc_proto",
         ":navigation_cc_proto",
         ":pad_msg_cc_proto",
+        ":planning_command_cc_proto",
         ":planning_cc_proto",
         ":planning_internal_cc_proto",
+        ":planning_runtime_status_cc_proto",
         ":scenario_type_cc_proto",
         ":sl_boundary_cc_proto",
     ],
@@ -192,10 +293,14 @@ name = "planning_msgs_py",
 deps = [
     ":planning_msgs_python_init",
         ":decision_py_pb2",
+        ":mission_directive_py_pb2",
+        ":motion_execution_py_pb2",
         ":navigation_py_pb2",
         ":pad_msg_py_pb2",
+        ":planning_command_py_pb2",
         ":planning_py_pb2",
         ":planning_internal_py_pb2",
+        ":planning_runtime_status_py_pb2",
         ":scenario_type_py_pb2",
         ":sl_boundary_py_pb2",
     ],

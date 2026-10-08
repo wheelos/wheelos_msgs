@@ -4,6 +4,25 @@ package apollo.mission;
 
 import "wheelos_msgs/basic_msgs/header.proto";
 import "wheelos_msgs/basic_msgs/geometry.proto";
+import "wheelos_msgs/control_msgs/safety_stop.proto";
+import "wheelos_msgs/mission_msgs/mission_request_result.proto";
+import "wheelos_msgs/planning_msgs/mission_directive.proto";
+
+// Values match MissionRequest.operation field numbers; preserve both together.
+enum MissionRequestOperation {
+  MISSION_OPERATION_UNKNOWN = 0;
+  MISSION_OPERATION_SUBMIT_TASK = 20;
+  MISSION_OPERATION_REPLACE_TASK = 21;
+  MISSION_OPERATION_CANCEL_TASK = 22;
+  MISSION_OPERATION_SUSPEND_TASK = 23;
+  MISSION_OPERATION_RESUME_TASK = 24;
+  MISSION_OPERATION_QUERY = 25;
+  MISSION_OPERATION_SAFETY_STOP = 26;
+  MISSION_OPERATION_SAFETY_RESET = 27;
+  MISSION_OPERATION_ACKNOWLEDGE_RECOVERY = 28;
+  MISSION_OPERATION_RETRY_TASK = 29;
+  MISSION_OPERATION_ABORT_TASK = 30;
+}
 
 // Mission parameters: Used to inject data into the Behavior Tree (BT)
 // Blackboard
@@ -45,4 +64,37 @@ message MissionRequest {
   repeated MissionParam parameters = 5;
 
   repeated MissionWaypoint waypoints = 6;
+  optional MissionRequestIdentity identity = 7;
+  optional uint32 contract_version = 8;
+
+  // Identity/version mark typed mode even when the operation is unknown.
+  // Typed operations never fall through to legacy task_name/BT parameters.
+  // Nested safety requester_epoch/request_id must equal the outer identity.
+  // Public plans may request a supported preferred_mode other than UNKNOWN or
+  // SAFETY_HOLD. domain_policy, open_space and budget_authorization_id remain
+  // internal authority fields.
+  oneof operation {
+    apollo.planning.MissionActivate submit_task = 20;
+    apollo.planning.MissionReplace replace_task = 21;
+    apollo.planning.MissionCancel cancel_task = 22;
+    apollo.planning.MissionSuspend suspend_task = 23;
+    apollo.planning.MissionResume resume_task = 24;
+    MissionTaskQuery query = 25;
+    apollo.control.SafetyStopRequest safety_stop = 26;
+    apollo.control.SafetyResetRequest safety_reset = 27;
+    MissionExpectedTask acknowledge_recovery = 28;
+    MissionExpectedTask retry_task = 29;
+    MissionExpectedTask abort_task = 30;
+  }
+}
+
+message MissionTaskQuery {
+  oneof target {
+    MissionRequestIdentity request_identity = 1;
+    apollo.planning.MissionCommandIdentity task_identity = 2;
+  }
+}
+
+message MissionExpectedTask {
+  optional apollo.planning.MissionCommandIdentity expected_task_identity = 1;
 }

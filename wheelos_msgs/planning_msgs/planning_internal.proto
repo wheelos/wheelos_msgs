@@ -11,6 +11,7 @@ import "wheelos_msgs/localization_msgs/localization.proto";
 import "wheelos_msgs/perception_msgs/traffic_light_detection.proto";
 import "wheelos_msgs/planning_msgs/decision.proto";
 import "wheelos_msgs/planning_msgs/navigation.proto";
+import "wheelos_msgs/planning_msgs/planning_command.proto";
 import "wheelos_msgs/planning_msgs/scenario_type.proto";
 import "wheelos_msgs/planning_msgs/sl_boundary.proto";
 import "wheelos_msgs/routing_msgs/routing.proto";
@@ -263,7 +264,37 @@ message LaneBorrowDebug {
   optional string transition_reason = 19;
 }
 
-// next ID: 32
+message RuntimeDebug {
+  optional string mission_id = 1;
+  optional string command_id = 2;
+  optional apollo.planning.PlanningSceneType active_scene = 3;
+  optional apollo.planning.PlanningMode requested_mode = 4;
+  optional apollo.planning.PlanningMode resolved_mode = 5;
+  optional bool has_lane_graph = 6;
+  optional bool has_route_semantics = 7;
+  optional bool has_local_corridor = 8;
+  optional bool has_drivable_area = 9;
+  optional bool has_parking_roi = 10;
+  optional bool has_goal_pose = 11;
+  optional bool has_stop_target = 12;
+  optional bool has_regulatory_context = 13;
+  optional double topology_confidence = 14;
+  optional double drivable_area_confidence = 15;
+  optional double target_geometry_confidence = 16;
+  repeated string blockers = 17;
+  optional string reason = 18;
+  optional bool can_run_on_lane_shell = 19;
+  optional bool can_run_corridor_shell = 20;
+  optional bool can_run_safety_hold_shell = 21;
+  optional bool has_structured_mapless_context = 22;
+  optional apollo.planning.PlanningOperatingDomain active_domain = 23;
+  optional bool can_run_structured_mapless_shell = 24;
+  optional bool can_run_open_space_shell = 25;
+  optional bool has_known_open_space_environment = 26;
+  optional bool supports_open_space_exploration = 27;
+}
+
+// next ID: 33
 message PlanningData {
   // input
   optional apollo.localization.LocalizationEstimate adc_position = 7;
@@ -294,6 +325,7 @@ message PlanningData {
   optional PullOverDebug pull_over = 29;
   optional HybridModelDebug hybrid_model = 30;
   optional LaneBorrowDebug lane_borrow = 31;
+  optional RuntimeDebug runtime = 32;
 }
 
 message LatticeStPixel {

@@ -1,0 +1,65 @@
+syntax = "proto2";
+
+package apollo.control;
+
+import "wheelos_msgs/basic_msgs/header.proto";
+import "wheelos_msgs/planning_msgs/mission_directive.proto";
+
+message SafetyOperationIdentity {
+  optional string requester_epoch = 1;
+  optional string request_id = 2;
+}
+
+message SafetyExecutionIdentity {
+  optional string control_epoch = 1;
+  optional uint64 generation = 2;
+}
+
+enum SafetyStopPolicy {
+  SAFETY_STOP_POLICY_UNKNOWN = 0;
+  SAFETY_STOP_CONTROLLED = 1;
+  SAFETY_STOP_HARD_ESTOP = 2;
+}
+
+message SafetyStopRequest {
+  optional apollo.common.Header header = 1;
+  optional SafetyOperationIdentity identity = 2;
+  optional SafetyStopPolicy policy = 3;
+  optional string reason = 4;
+}
+
+message SafetyResetRequest {
+  optional apollo.common.Header header = 1;
+  optional SafetyOperationIdentity identity = 2;
+  optional SafetyExecutionIdentity expected_safety_identity = 3;
+}
+
+message SafetyControlRequest {
+  oneof operation {
+    SafetyStopRequest stop = 1;
+    SafetyResetRequest reset = 2;
+  }
+}
+
+// Enforcement, physical confirmation and durable commit are independent facts.
+// Absent facts are unknown, not false. An unlatched observation never grants
+// movement or confirms reset; reset requires the matching full safety identity.
+message SafetyStopObservation {
+  optional SafetyOperationIdentity operation_identity = 1;
+  optional SafetyExecutionIdentity safety_identity = 2;
+  optional bool enforced = 3;
+  optional bool stop_confirmed = 4;
+  optional bool safety_latched = 5;
+  optional SafetyStopPolicy effective_policy = 6;
+  optional double observed_at_sec = 7;
+  optional string clock_domain = 8;
+  optional string measurement_provenance = 9;
+  optional double absolute_linear_speed_mps = 10;
+  optional double absolute_yaw_rate_radps = 11;
+  optional double settled_duration_sec = 12;
+  optional bool durably_committed = 13;
+  optional uint64 commit_sequence = 14;
+  repeated apollo.planning.MissionCommandIdentity affected_task_identity = 15;
+  optional string reason = 16;
+  optional bool operation_accepted = 17;
+}

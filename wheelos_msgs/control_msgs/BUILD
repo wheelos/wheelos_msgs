@@ -7,6 +7,52 @@ load("@rules_python//python:defs.bzl", "py_library")
 
 package(default_visibility = ["//visibility:public"])
 
+proto_library(
+    name = "safety_stop_proto",
+    srcs = ["safety_stop.proto"],
+    deps = [
+        "//wheelos_msgs/basic_msgs:header_proto",
+        "//wheelos_msgs/planning_msgs:mission_directive_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "safety_stop_cc_proto",
+    deps = [":safety_stop_proto"],
+)
+
+py_proto_library(
+    name = "safety_stop_py_pb2",
+    deps = [":safety_stop_proto"],
+)
+
+cc_proto_library(
+    name = "control_runtime_status_cc_proto",
+    deps = [
+        ":control_runtime_status_proto",
+    ],
+)
+
+proto_library(
+    name = "control_runtime_status_proto",
+    srcs = ["control_runtime_status.proto"],
+    deps = [
+        "//wheelos_msgs/basic_msgs:header_proto",
+        "//wheelos_msgs/chassis_msgs:chassis_proto",
+        "//wheelos_msgs/planning_msgs:decision_proto",
+        "//wheelos_msgs/planning_msgs:mission_directive_proto",
+        "//wheelos_msgs/planning_msgs:motion_execution_proto",
+        "//wheelos_msgs/planning_msgs:planning_command_proto",
+        "//wheelos_msgs/planning_msgs:planning_proto",
+        "//wheelos_msgs/planning_msgs:planning_runtime_status_proto",
+    ],
+)
+
+py_proto_library(
+    name = "control_runtime_status_py_pb2",
+    deps = [":control_runtime_status_proto"],
+)
+
 cc_proto_library(
     name = "control_cmd_cc_proto",
     deps = [
@@ -78,7 +124,9 @@ py_proto_library(
 cc_library(
     name = "control_msgs_cc_proto",
     deps = [
+        ":safety_stop_cc_proto",
         ":control_cmd_cc_proto",
+        ":control_runtime_status_cc_proto",
         ":input_debug_cc_proto",
         ":pad_msg_cc_proto",
     ],
@@ -92,8 +140,10 @@ srcs = ["__init__.py"],
 py_library(
 name = "control_msgs_py",
 deps = [
+    ":safety_stop_py_pb2",
     ":control_msgs_python_init",
         ":control_cmd_py_pb2",
+        ":control_runtime_status_py_pb2",
         ":input_debug_py_pb2",
         ":pad_msg_py_pb2",
     ],

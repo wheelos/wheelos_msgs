@@ -7,6 +7,48 @@ load("@rules_python//python:defs.bzl", "py_library")
 
 package(default_visibility = ["//visibility:public"])
 
+proto_library(
+    name = "mission_request_result_proto",
+    srcs = ["mission_request_result.proto"],
+    deps = [
+        "//wheelos_msgs/control_msgs:safety_stop_proto",
+        "//wheelos_msgs/planning_msgs:mission_directive_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "mission_request_result_cc_proto",
+    deps = [":mission_request_result_proto"],
+)
+
+py_proto_library(
+    name = "mission_request_result_py_pb2",
+    deps = [":mission_request_result_proto"],
+)
+
+cc_proto_library(
+    name = "mission_runtime_status_cc_proto",
+    deps = [
+        ":mission_runtime_status_proto",
+    ],
+)
+
+proto_library(
+    name = "mission_runtime_status_proto",
+    srcs = ["mission_runtime_status.proto"],
+    deps = [
+        ":mission_request_proto",
+        ":mission_request_result_proto",
+        "//wheelos_msgs/basic_msgs:header_proto",
+        "//wheelos_msgs/planning_msgs:mission_directive_proto",
+    ],
+)
+
+py_proto_library(
+    name = "mission_runtime_status_py_pb2",
+    deps = [":mission_runtime_status_proto"],
+)
+
 cc_proto_library(
     name = "mission_request_cc_proto",
     deps = [
@@ -18,6 +60,9 @@ proto_library(
     name = "mission_request_proto",
     srcs = ["mission_request.proto"],
     deps = [
+        ":mission_request_result_proto",
+        "//wheelos_msgs/control_msgs:safety_stop_proto",
+        "//wheelos_msgs/planning_msgs:mission_directive_proto",
         "//wheelos_msgs/basic_msgs:header_proto",
         "//wheelos_msgs/basic_msgs:geometry_proto",
     ],
@@ -33,6 +78,8 @@ cc_library(
     name = "mission_msgs_cc_proto",
     deps = [
         ":mission_request_cc_proto",
+        ":mission_request_result_cc_proto",
+        ":mission_runtime_status_cc_proto",
     ],
 )
 
@@ -44,7 +91,9 @@ srcs = ["__init__.py"],
 py_library(
 name = "mission_msgs_py",
 deps = [
+    ":mission_request_result_py_pb2",
     ":mission_msgs_python_init",
         ":mission_request_py_pb2",
+        ":mission_runtime_status_py_pb2",
     ],
 )

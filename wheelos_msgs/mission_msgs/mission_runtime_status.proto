@@ -1,0 +1,92 @@
+syntax = "proto2";
+
+package apollo.mission;
+
+import "wheelos_msgs/basic_msgs/header.proto";
+import "wheelos_msgs/planning_msgs/mission_directive.proto";
+import "wheelos_msgs/mission_msgs/mission_request_result.proto";
+import "wheelos_msgs/mission_msgs/mission_request.proto";
+
+enum MissionRuntimeState {
+  MISSION_RUNTIME_UNKNOWN = 0;
+  MISSION_RUNTIME_IDLE = 1;
+  MISSION_RUNTIME_RUNNING = 2;
+  MISSION_RUNTIME_WAITING_COMMAND = 3;
+  MISSION_RUNTIME_FAILED = 4;
+  MISSION_RUNTIME_COMPLETED = 5;
+  MISSION_RUNTIME_RECOVERY_REQUIRED = 6;
+}
+
+enum MissionCommandState {
+  MISSION_COMMAND_UNKNOWN = 0;
+  MISSION_COMMAND_DISPATCHED = 1;
+  MISSION_COMMAND_ACCEPTED = 2;
+  MISSION_COMMAND_RUNNING = 3;
+  MISSION_COMMAND_HOLDING = 4;
+  MISSION_COMMAND_QUEUED = 5;
+  MISSION_COMMAND_CANCELLING = 6;
+  MISSION_COMMAND_COMPLETED = 7;
+  MISSION_COMMAND_FAILED = 8;
+  MISSION_COMMAND_CANCELLED = 9;
+}
+
+enum MissionRecoveryAction {
+  MISSION_RECOVERY_ACTION_NONE = 0;
+  MISSION_RECOVERY_ACTION_ACKNOWLEDGE = 1;
+  MISSION_RECOVERY_ACTION_RESUME = 2;
+  MISSION_RECOVERY_ACTION_RETRY = 3;
+  MISSION_RECOVERY_ACTION_ABORT = 4;
+  MISSION_RECOVERY_ACTION_ESCALATE_MRM = 5;
+}
+
+// Implementation inventory for the typed public ingress, not the legacy BT
+// path. Declaration is not execution support; implementation is not live
+// participant readiness, safe start authorization or movement permission.
+message MissionContractCapabilities {
+  optional uint32 request_contract_version = 1;
+  // Only a complete inventory lets an empty implemented list mean none.
+  // Missing inventory/feature facts mean unknown.
+  optional bool complete_inventory = 2;
+  repeated MissionRequestOperation declared_operation = 3;
+  repeated MissionRequestOperation implemented_operation = 4;
+  repeated apollo.planning.MissionTaskType declared_task_type = 5;
+  repeated apollo.planning.MissionTaskType implemented_task_type = 6;
+  optional bool typed_dispatcher_implemented = 7;
+  optional bool durable_request_ledger_implemented = 8;
+  optional bool independent_safety_ingress_implemented = 9;
+  optional bool restart_reauthorization_implemented = 10;
+  optional bool angular_motion_evidence_implemented = 11;
+}
+
+message MissionRuntimeStatus {
+  // Mission-owned public lifecycle view. PlanningRuntimeStatus is an
+  // execution report consumed by Mission, not an alternate task authority.
+  optional apollo.common.Header header = 1;
+  optional string mission_id = 2;
+  optional string task_name = 3;
+  optional string active_command_id = 4;
+  optional MissionRuntimeState state = 5;
+  optional MissionCommandState active_command_state = 6;
+  repeated string queued_command_id = 7;
+  optional string reason = 8;
+  optional bool operator_recovery_required = 9;
+  optional string last_terminal_command_id = 10;
+  optional MissionCommandState last_terminal_command_state = 11;
+  optional string last_terminal_reason = 12;
+  optional uint32 queued_command_count = 13;
+  optional uint32 active_dispatch_count = 14;
+  optional bool operator_acknowledged = 15;
+  repeated MissionRecoveryAction allowed_recovery_action = 16;
+  optional MissionRecoveryAction recommended_recovery_action = 17;
+  optional string recovery_reason = 18;
+  optional uint32 retry_count = 19;
+  optional uint32 retry_budget_remaining = 20;
+  optional double recovery_deadline_sec = 21;
+  optional bool recovery_timeout_expired = 22;
+  optional apollo.planning.MissionCommandIdentity accepted_mission_identity = 23;
+  optional apollo.planning.MissionCommandIdentity accepted_directive_identity = 24;
+  optional apollo.planning.MissionCommandIdentity pending_directive_identity = 25;
+  optional MissionRequestResult last_request_result = 26;
+  optional apollo.planning.MissionCommandIdentity last_terminal_task_identity = 27;
+  optional MissionContractCapabilities contract_capabilities = 28;
+}
